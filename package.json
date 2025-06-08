@@ -1,0 +1,44 @@
+{
+  "name": "copy-code-block-extension",
+  "version": "1.0.0",
+  "description": "Chrome extension that automatically adds copy buttons to code blocks on web pages",
+  "main": "content.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"No build process required for this extension\"",
+    "zip": "zip -r copy-code-block-extension.zip . -x node_modules/\\* .git/\\* *.zip README.md package.json",
+    "lint": "eslint *.js",
+    "format": "prettier --write *.js *.css *.html"
+  },
+  "keywords": [
+    "chrome-extension",
+    "code-copy",
+    "clipboard",
+    "code-blocks",
+    "developer-tools",
+    "productivity",
+    "github",
+    "stackoverflow",
+    "coding"
+  ],
+  "author": "CodeCopy Extension Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/copy-code-block.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/copy-code-block/issues"
+  },
+  "homepage": "https://github.com/your-username/copy-code-block#readme",
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "Chrome >= 88"
+  ]
+} 

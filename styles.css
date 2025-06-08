@@ -4,29 +4,31 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  background: rgba(0, 0, 0, 0.8);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
+  border-radius: 8px;
+  padding: 8px 14px;
   font-size: 12px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
-  transition: all 0.2s ease;
+  gap: 6px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
-  opacity: 0.7;
-  backdrop-filter: blur(4px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0.9;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .code-copy-button:hover {
   opacity: 1;
-  background: rgba(0, 0, 0, 0.9);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .code-copy-button:active {
@@ -37,7 +39,8 @@
 .code-copy-button svg {
   width: 14px;
   height: 14px;
-  opacity: 0.9;
+  opacity: 0.95;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .code-copy-button .copy-text {
@@ -47,22 +50,28 @@
 
 /* Success state */
 .code-copy-button.copy-success {
-  background: rgba(34, 197, 94, 0.9);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .code-copy-button.copy-success:hover {
-  background: rgba(34, 197, 94, 1);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 
 /* Error state */
 .code-copy-button.copy-error {
-  background: rgba(239, 68, 68, 0.9);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .code-copy-button.copy-error:hover {
-  background: rgba(239, 68, 68, 1);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
 }
 
 /* Theme variations for different websites */
@@ -72,79 +81,94 @@
 .highlight-source-js .code-copy-button,
 .highlight-source-python .code-copy-button,
 .highlight-source-css .code-copy-button {
-  background: rgba(36, 41, 46, 0.9);
+  background: linear-gradient(135deg, #24292e 0%, #1b1f23 100%);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .highlight .code-copy-button:hover,
 .highlight-source-js .code-copy-button:hover,
 .highlight-source-python .code-copy-button:hover,
 .highlight-source-css .code-copy-button:hover {
-  background: rgba(36, 41, 46, 1);
+  background: linear-gradient(135deg, #1b1f23 0%, #0d1117 100%);
+  box-shadow: 0 6px 16px rgba(36, 41, 46, 0.4);
 }
 
 /* Stack Overflow */
 .s-code-block .code-copy-button,
 .prettyprint .code-copy-button {
-  background: rgba(67, 56, 202, 0.9);
+  background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.3);
 }
 
 .s-code-block .code-copy-button:hover,
 .prettyprint .code-copy-button:hover {
-  background: rgba(67, 56, 202, 1);
+  background: linear-gradient(135deg, #3730a3 0%, #312e81 100%);
+  box-shadow: 0 6px 16px rgba(67, 56, 202, 0.4);
 }
 
 /* MDN */
 .code-example .code-copy-button {
-  background: rgba(33, 150, 243, 0.9);
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
 }
 
 .code-example .code-copy-button:hover {
-  background: rgba(33, 150, 243, 1);
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
 }
 
 /* CodePen */
 .codepen .code-copy-button {
-  background: rgba(71, 85, 105, 0.9);
+  background: linear-gradient(135deg, #475569 0%, #334155 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
 }
 
 .codepen .code-copy-button:hover {
-  background: rgba(71, 85, 105, 1);
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  box-shadow: 0 6px 16px rgba(71, 85, 105, 0.4);
 }
 
 /* Medium */
 .graf--code .code-copy-button {
-  background: rgba(41, 41, 41, 0.9);
+  background: linear-gradient(135deg, #292929 0%, #1a1a1a 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(41, 41, 41, 0.3);
 }
 
 .graf--code .code-copy-button:hover {
-  background: rgba(41, 41, 41, 1);
+  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+  box-shadow: 0 6px 16px rgba(41, 41, 41, 0.4);
 }
 
 /* Dev.to */
 .highlight .code-copy-button {
-  background: rgba(59, 73, 223, 0.9);
+  background: linear-gradient(135deg, #3b49df 0%, #2d3748 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(59, 73, 223, 0.3);
 }
 
 .highlight .code-copy-button:hover {
-  background: rgba(59, 73, 223, 1);
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  box-shadow: 0 6px 16px rgba(59, 73, 223, 0.4);
 }
 
 /* Light theme adaptation */
 @media (prefers-color-scheme: light) {
   .code-copy-button {
-    background: rgba(255, 255, 255, 0.95);
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
     color: #374151;
     border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
   .code-copy-button:hover {
-    background: rgba(255, 255, 255, 1);
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     color: #111827;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    border-color: rgba(0, 0, 0, 0.2);
   }
 }
 

@@ -1,305 +1,173 @@
 // Copy Code Block Extension - Content Script
-// Automatically adds copy buttons to code blocks on web pages
+// Simple and clean implementation
 
 class CodeBlockCopier {
   constructor() {
     this.copyButtons = new Set();
-    this.observer = null;
     this.copiesMade = 0;
     this.init();
   }
 
   init() {
-    // Wait for DOM to be ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => this.processCodeBlocks());
-    } else {
-      this.processCodeBlocks();
-    }
-
-    // Set up mutation observer for dynamically added content
+    this.addStyles();
+    this.processCodeBlocks();
     this.setupMutationObserver();
   }
 
-  processCodeBlocks() {
-    // Find all code blocks using various selectors
-    const codeSelectors = [
-      'pre code',
-      'pre',
-      '.highlight pre',
-      '.codehilite pre',
-      '.highlight code',
-      'div[class*="highlight"] pre',
-      'div[class*="code"] pre',
-      '.language-* pre',
-      'code[class*="language-"]',
-      '.hljs',
-      '.CodeMirror',
-      '.ace_editor'
-    ];
+  addStyles() {
+    if (document.getElementById('copy-button-styles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'copy-button-styles';
+    style.textContent = `
+      .code-copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #333;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        cursor: pointer;
+        z-index: 9999;
+        backdrop-filter: blur(4px);
+      }
+      .code-copy-btn:hover {
+        background: rgba(240, 240, 240, 0.95);
+      }
+      .code-copy-btn.success {
+        background: rgba(219, 234, 254, 0.9);
+        color: #1d4ed8;
+        border-color: #3b82f6;
+      }
+    `;
+    document.head.appendChild(style);
+  }
 
+  processCodeBlocks() {
+    const selectors = ['pre', 'code', '.highlight', '.codehilite'];
     const codeBlocks = new Set();
 
-    // Collect all code blocks
-    codeSelectors.forEach(selector => {
-      try {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(element => {
-          if (this.isValidCodeBlock(element)) {
-            codeBlocks.add(element);
-          }
-        });
-      } catch (e) {
-        // Continue if selector fails
-      }
+    selectors.forEach(selector => {
+      document.querySelectorAll(selector).forEach(block => {
+        if (this.isValidCodeBlock(block)) {
+          codeBlocks.add(block);
+        }
+      });
     });
 
-    // Process each unique code block
     codeBlocks.forEach(block => this.addCopyButton(block));
   }
 
   isValidCodeBlock(element) {
-    // Check if element is a valid code block
-    if (!element || element.offsetHeight === 0 || element.offsetWidth === 0) {
-      return false;
+    if (!element || element.offsetHeight < 20 || element.offsetWidth < 50) return false;
+    if (element.querySelector('.code-copy-btn')) return false;
+    
+    // Check if parent already has a button to avoid duplicates
+    let parent = element.parentElement;
+    while (parent && parent !== document.body) {
+      if (parent.querySelector('.code-copy-btn')) return false;
+      parent = parent.parentElement;
     }
-
-    // Skip if already has a copy button
-    if (element.querySelector('.code-copy-button')) {
-      return false;
-    }
-
-    // Check if element contains code-like content
-    const text = element.textContent || element.innerText;
-    if (!text || text.trim().length < 10) {
-      return false;
-    }
-
-    // Skip if it's just a single word or short phrase
-    if (text.trim().split(/\s+/).length < 2 && text.length < 20) {
-      return false;
-    }
-
-    return true;
+    
+    const text = element.textContent || '';
+    return text.trim().length > 15;
   }
 
   addCopyButton(codeBlock) {
-    try {
-      // Create the copy button
-      const copyButton = document.createElement('button');
-      copyButton.className = 'code-copy-button';
-      copyButton.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-          <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-        </svg>
-        <span class="copy-text">Copy</span>
-      `;
-      copyButton.title = 'Copy code to clipboard';
+    const button = document.createElement('button');
+    button.className = 'code-copy-btn';
+    button.textContent = 'Copy';
+    button.title = 'Copy code';
 
-      // Add click event listener
-      copyButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.copyCode(codeBlock, copyButton);
-      });
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.copyCode(codeBlock, button);
+    });
 
-      // Position the button
-      this.positionCopyButton(codeBlock, copyButton);
-
-      // Keep track of the button
-      this.copyButtons.add(copyButton);
-
-    } catch (error) {
-      console.error('Error adding copy button:', error);
-    }
-  }
-
-  positionCopyButton(codeBlock, copyButton) {
-    // Find the best container for the button
+    // Find the best container - be more specific to avoid duplicates
     let container = codeBlock;
     
-    // Check if the code block is inside a pre tag
+    // If it's a code inside pre, use the pre
     if (codeBlock.tagName === 'CODE' && codeBlock.parentElement?.tagName === 'PRE') {
       container = codeBlock.parentElement;
     }
-
-    // Check if there's a wrapper div
-    const wrapper = container.closest('.highlight, .codehilite, [class*="highlight"], [class*="code"]');
-    if (wrapper) {
+    
+    // If there's a highlight wrapper, use that instead
+    const wrapper = container.closest('.highlight, .codehilite');
+    if (wrapper && !wrapper.querySelector('.code-copy-btn')) {
       container = wrapper;
     }
 
-    // Make container relative if it's not already positioned
-    const containerStyle = window.getComputedStyle(container);
-    if (containerStyle.position === 'static') {
+    // Double-check we're not adding duplicate
+    if (container.querySelector('.code-copy-btn')) {
+      return;
+    }
+
+    if (getComputedStyle(container).position === 'static') {
       container.style.position = 'relative';
     }
 
-    // Add the button to the container
-    container.appendChild(copyButton);
+    container.appendChild(button);
+    this.copyButtons.add(button);
   }
 
   async copyCode(codeBlock, button) {
     try {
-      // Get the code text
-      let codeText = this.extractCodeText(codeBlock);
-
-      // Copy to clipboard
-      await navigator.clipboard.writeText(codeText);
-
-      // Show success feedback
-      this.showCopyFeedback(button, 'Copied!', 'success');
+      const text = this.getCodeText(codeBlock);
+      await navigator.clipboard.writeText(text);
       
-      // Track copy statistics
+      button.textContent = 'Copied!';
+      button.classList.add('success');
       this.copiesMade++;
 
+      setTimeout(() => {
+        button.textContent = 'Copy';
+        button.classList.remove('success');
+      }, 1500);
+
     } catch (error) {
-      console.error('Failed to copy code:', error);
-      
-      // Fallback to document.execCommand
-      try {
-        const textArea = document.createElement('textarea');
-        textArea.value = this.extractCodeText(codeBlock);
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        
-        this.showCopyFeedback(button, 'Copied!', 'success');
-      } catch (fallbackError) {
-        this.showCopyFeedback(button, 'Failed', 'error');
-      }
+      button.textContent = 'Failed';
+      setTimeout(() => {
+        button.textContent = 'Copy';
+      }, 1500);
     }
   }
 
-  extractCodeText(codeBlock) {
-    // Clone the element to avoid modifying the original
-    const clone = codeBlock.cloneNode(true);
-
-    // Remove any copy buttons from the clone
-    const copyButtons = clone.querySelectorAll('.code-copy-button');
-    copyButtons.forEach(btn => btn.remove());
-
-    // Remove line numbers if present
-    const lineNumbers = clone.querySelectorAll('.line-number, .lineno, [class*="line-number"]');
-    lineNumbers.forEach(ln => ln.remove());
-
-    // Get the text content
-    let text = clone.textContent || clone.innerText || '';
-
-    // Clean up the text
-    text = text.replace(/^\s*\n|\n\s*$/g, ''); // Remove leading/trailing newlines
-    
-    return text;
-  }
-
-  showCopyFeedback(button, message, type) {
-    const originalContent = button.innerHTML;
-    const textElement = button.querySelector('.copy-text');
-    
-    if (textElement) {
-      textElement.textContent = message;
-    }
-    
-    button.classList.add(`copy-${type}`);
-
-    // Reset after 2 seconds
-    setTimeout(() => {
-      button.innerHTML = originalContent;
-      button.classList.remove(`copy-${type}`);
-    }, 2000);
+  getCodeText(element) {
+    const clone = element.cloneNode(true);
+    clone.querySelectorAll('.code-copy-btn').forEach(btn => btn.remove());
+    return clone.textContent || clone.innerText || '';
   }
 
   setupMutationObserver() {
-    // Watch for dynamically added content
-    this.observer = new MutationObserver((mutations) => {
-      let shouldProcess = false;
-
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'childList') {
-          mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === Node.ELEMENT_NODE) {
-              // Check if the added node contains code blocks
-              if (node.querySelector && (
-                node.querySelector('pre') ||
-                node.querySelector('code') ||
-                node.matches && node.matches('pre, code')
-              )) {
-                shouldProcess = true;
-              }
-            }
-          });
-        }
-      });
-
-      if (shouldProcess) {
-        // Debounce processing
-        clearTimeout(this.processTimeout);
-        this.processTimeout = setTimeout(() => {
-          this.processCodeBlocks();
-        }, 500);
-      }
+    const observer = new MutationObserver(() => {
+      setTimeout(() => this.processCodeBlocks(), 500);
     });
 
-    this.observer.observe(document.body, {
+    observer.observe(document.body, {
       childList: true,
       subtree: true
     });
   }
-
-  destroy() {
-    // Clean up
-    if (this.observer) {
-      this.observer.disconnect();
-    }
-    
-    this.copyButtons.forEach(button => {
-      if (button.parentNode) {
-        button.parentNode.removeChild(button);
-      }
-    });
-    
-    this.copyButtons.clear();
-  }
 }
 
-// Message listener for popup communication
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'ping') {
+// Initialize
+const copier = new CodeBlockCopier();
+
+// Message handling
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'getStats') {
+    sendResponse({
+      codeBlocks: copier.copyButtons.size,
+      copiesMade: copier.copiesMade
+    });
+  } else if (request.action === 'ping') {
     sendResponse({ status: 'active' });
-  } else if (message.action === 'getStats') {
-    const stats = {
-      codeBlocks: codeBlockCopier ? codeBlockCopier.copyButtons.size : 0,
-      copiesMade: codeBlockCopier ? (codeBlockCopier.copiesMade || 0) : 0
-    };
-    sendResponse(stats);
   }
   return true;
-});
-
-// Initialize the extension
-let codeBlockCopier;
-
-// Handle extension updates/reloads
-if (window.codeBlockCopier) {
-  window.codeBlockCopier.destroy();
-}
-
-codeBlockCopier = new CodeBlockCopier();
-window.codeBlockCopier = codeBlockCopier;
-
-// Handle page navigation (for SPAs)
-let currentUrl = window.location.href;
-setInterval(() => {
-  if (window.location.href !== currentUrl) {
-    currentUrl = window.location.href;
-    setTimeout(() => {
-      codeBlockCopier.processCodeBlocks();
-    }, 1000);
-  }
-}, 1000); 
+}); 
