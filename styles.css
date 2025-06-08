@@ -1,0 +1,254 @@
+/* Copy Code Block Extension - Styles */
+
+.code-copy-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+  z-index: 1000;
+  opacity: 0.7;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.code-copy-button:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.code-copy-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.code-copy-button svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.9;
+}
+
+.code-copy-button .copy-text {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* Success state */
+.code-copy-button.copy-success {
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+}
+
+.code-copy-button.copy-success:hover {
+  background: rgba(34, 197, 94, 1);
+}
+
+/* Error state */
+.code-copy-button.copy-error {
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+}
+
+.code-copy-button.copy-error:hover {
+  background: rgba(239, 68, 68, 1);
+}
+
+/* Theme variations for different websites */
+
+/* GitHub */
+.highlight .code-copy-button,
+.highlight-source-js .code-copy-button,
+.highlight-source-python .code-copy-button,
+.highlight-source-css .code-copy-button {
+  background: rgba(36, 41, 46, 0.9);
+}
+
+.highlight .code-copy-button:hover,
+.highlight-source-js .code-copy-button:hover,
+.highlight-source-python .code-copy-button:hover,
+.highlight-source-css .code-copy-button:hover {
+  background: rgba(36, 41, 46, 1);
+}
+
+/* Stack Overflow */
+.s-code-block .code-copy-button,
+.prettyprint .code-copy-button {
+  background: rgba(67, 56, 202, 0.9);
+  color: white;
+}
+
+.s-code-block .code-copy-button:hover,
+.prettyprint .code-copy-button:hover {
+  background: rgba(67, 56, 202, 1);
+}
+
+/* MDN */
+.code-example .code-copy-button {
+  background: rgba(33, 150, 243, 0.9);
+  color: white;
+}
+
+.code-example .code-copy-button:hover {
+  background: rgba(33, 150, 243, 1);
+}
+
+/* CodePen */
+.codepen .code-copy-button {
+  background: rgba(71, 85, 105, 0.9);
+  color: white;
+}
+
+.codepen .code-copy-button:hover {
+  background: rgba(71, 85, 105, 1);
+}
+
+/* Medium */
+.graf--code .code-copy-button {
+  background: rgba(41, 41, 41, 0.9);
+  color: white;
+}
+
+.graf--code .code-copy-button:hover {
+  background: rgba(41, 41, 41, 1);
+}
+
+/* Dev.to */
+.highlight .code-copy-button {
+  background: rgba(59, 73, 223, 0.9);
+  color: white;
+}
+
+.highlight .code-copy-button:hover {
+  background: rgba(59, 73, 223, 1);
+}
+
+/* Light theme adaptation */
+@media (prefers-color-scheme: light) {
+  .code-copy-button {
+    background: rgba(255, 255, 255, 0.95);
+    color: #374151;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .code-copy-button:hover {
+    background: rgba(255, 255, 255, 1);
+    color: #111827;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .code-copy-button {
+    background: black;
+    color: white;
+    border: 2px solid white;
+  }
+
+  .code-copy-button:hover {
+    background: white;
+    color: black;
+    border: 2px solid black;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .code-copy-button {
+    transition: none;
+  }
+
+  .code-copy-button:hover {
+    transform: none;
+  }
+
+  .code-copy-button:active {
+    transform: none;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .code-copy-button {
+    padding: 8px 12px;
+    font-size: 13px;
+    top: 4px;
+    right: 4px;
+  }
+
+  .code-copy-button svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Ensure button is visible on various backgrounds */
+.code-copy-button {
+  mix-blend-mode: difference;
+}
+
+/* Override mix-blend-mode for better visibility on some sites */
+.highlight .code-copy-button,
+.hljs .code-copy-button,
+.codehilite .code-copy-button {
+  mix-blend-mode: normal;
+}
+
+/* Ensure proper positioning for nested code blocks */
+pre:has(.code-copy-button) {
+  position: relative;
+}
+
+div[class*="highlight"]:has(.code-copy-button) {
+  position: relative;
+}
+
+/* Animation for button appearance */
+@keyframes copyButtonFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.8);
+  }
+  to {
+    opacity: 0.7;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.code-copy-button {
+  animation: copyButtonFadeIn 0.3s ease-out;
+}
+
+/* Ensure button doesn't interfere with text selection */
+.code-copy-button {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Focus styles for accessibility */
+.code-copy-button:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.code-copy-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Ensure proper layering */
+.code-copy-button {
+  isolation: isolate;
+} 
