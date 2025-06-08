@@ -5,6 +5,7 @@ class CodeBlockCopier {
   constructor() {
     this.copyButtons = new Set();
     this.observer = null;
+    this.copiesMade = 0;
     this.init();
   }
 
@@ -149,6 +150,9 @@ class CodeBlockCopier {
 
       // Show success feedback
       this.showCopyFeedback(button, 'Copied!', 'success');
+      
+      // Track copy statistics
+      this.copiesMade++;
 
     } catch (error) {
       console.error('Failed to copy code:', error);
@@ -263,6 +267,20 @@ class CodeBlockCopier {
     this.copyButtons.clear();
   }
 }
+
+// Message listener for popup communication
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'ping') {
+    sendResponse({ status: 'active' });
+  } else if (message.action === 'getStats') {
+    const stats = {
+      codeBlocks: codeBlockCopier ? codeBlockCopier.copyButtons.size : 0,
+      copiesMade: codeBlockCopier ? (codeBlockCopier.copiesMade || 0) : 0
+    };
+    sendResponse(stats);
+  }
+  return true;
+});
 
 // Initialize the extension
 let codeBlockCopier;
