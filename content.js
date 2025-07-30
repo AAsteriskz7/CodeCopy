@@ -65,17 +65,28 @@ class CodeBlockCopier {
   isValidCodeBlock(element) {
     if (!element || element.offsetHeight < 20 || element.offsetWidth < 50) return false;
     if (element.querySelector('.code-copy-btn')) return false;
-    
+
     // Check if parent already has a button to avoid duplicates
     let parent = element.parentElement;
     while (parent && parent !== document.body) {
-      if (parent.querySelector('.code-copy-btn')) return false;
-      parent = parent.parentElement;
+        if (parent.querySelector('.code-copy-btn')) return false;
+        parent = parent.parentElement;
     }
+
+    const style = window.getComputedStyle(element);
+    const isBlock = style.display === 'block' || style.display === 'grid' || style.display === 'flex';
     
+    if (element.tagName === 'CODE' && (!element.parentElement || element.parentElement.tagName !== 'PRE')) {
+        return false;
+    }
+
+    if (!isBlock && element.tagName !== 'PRE') {
+        return false;
+    }
+
     const text = element.textContent || '';
     return text.trim().length > 15;
-  }
+}
 
   addCopyButton(codeBlock) {
     const button = document.createElement('button');
