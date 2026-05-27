@@ -1,50 +1,109 @@
 // Copy Code Block Extension - Content Script
-// Simple and clean implementation
+// Clean and elegant integration with popup settings, animations, and storage
+
+const COPY_SVG = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; display: inline-block; vertical-align: middle;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+const SUCCESS_SVG = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; display: inline-block; vertical-align: middle;"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
 
 class CodeBlockCopier {
   constructor() {
-    this.copyButtons = new Set();
+    this.copyButtons = new Map(); // Keep track of codeBlock -> button mapping
     this.copiesMade = 0;
+    this.settings = {
+      theme: 'gradient',
+      position: 'top-right',
+      autoHide: false,
+      stripLines: true,
+      blocklist: ''
+    };
     this.init();
   }
 
-  init() {
-    this.addStyles();
+  async init() {
+    await this.loadSettings();
+    if (this.isCurrentPageExcluded()) {
+      return;
+    }
     this.processCodeBlocks();
     this.setupMutationObserver();
+    this.setupStorageListener();
   }
 
-  addStyles() {
-    if (document.getElementById('copy-button-styles')) return;
-    
-    const style = document.createElement('style');
-    style.id = 'copy-button-styles';
-    style.textContent = `
-      .code-copy-btn {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        padding: 4px 8px;
-        font-size: 11px;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        color: #333;
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid #ccc;
-        border-radius: 3px;
-        cursor: pointer;
-        z-index: 9999;
-        backdrop-filter: blur(4px);
+  async loadSettings() {
+    return new Promise((resolve) => {
+      chrome.storage.local.get(['theme', 'position', 'autoHide', 'stripLines', 'blocklist'], (res) => {
+        if (res.theme) this.settings.theme = res.theme;
+        if (res.position) this.settings.position = res.position;
+        if (res.autoHide !== undefined) this.settings.autoHide = res.autoHide;
+        if (res.stripLines !== undefined) this.settings.stripLines = res.stripLines;
+        if (res.blocklist !== undefined) this.settings.blocklist = res.blocklist;
+        resolve();
+      });
+    });
+  }
+
+  isCurrentPageExcluded() {
+    if (!this.settings.blocklist) return false;
+    const url = window.location.href;
+    const lines = this.settings.blocklist.split('\n');
+    for (let line of lines) {
+      const trimmed = line.trim();
+      if (trimmed && url.includes(trimmed)) {
+        return true;
       }
-      .code-copy-btn:hover {
-        background: rgba(240, 240, 240, 0.95);
+    }
+    return false;
+  }
+
+  setupStorageListener() {
+    chrome.storage.onChanged.addListener((changes) => {
+      let settingsChanged = false;
+      for (let key in changes) {
+        if (key in this.settings) {
+          this.settings[key] = changes[key].newValue;
+          settingsChanged = true;
+        }
       }
-      .code-copy-btn.success {
-        background: rgba(219, 234, 254, 0.9);
-        color: #1d4ed8;
-        border-color: #3b82f6;
+      if (settingsChanged) {
+        this.updateAllButtons();
       }
-    `;
-    document.head.appendChild(style);
+    });
+  }
+
+  updateAllButtons() {
+    if (this.isCurrentPageExcluded()) {
+      this.removeAllButtons();
+      return;
+    }
+
+    // Process new code blocks
+    this.processCodeBlocks();
+
+    // Update styling class names for all existing buttons
+    this.copyButtons.forEach((button, codeBlock) => {
+      button.className = 'code-copy-button';
+      button.classList.add(`theme-${this.settings.theme}`);
+      button.classList.add(`pos-${this.settings.position}`);
+      
+      const container = button.parentElement;
+      if (container) {
+        if (this.settings.autoHide) {
+          container.classList.add('code-copy-btn-autohide');
+        } else {
+          container.classList.remove('code-copy-btn-autohide');
+        }
+      }
+    });
+  }
+
+  removeAllButtons() {
+    this.copyButtons.forEach((button) => {
+      const container = button.parentElement;
+      if (container) {
+        container.classList.remove('code-copy-btn-autohide');
+      }
+      button.remove();
+    });
+    this.copyButtons.clear();
   }
 
   processCodeBlocks() {
@@ -64,12 +123,12 @@ class CodeBlockCopier {
 
   isValidCodeBlock(element) {
     if (!element || element.offsetHeight < 20 || element.offsetWidth < 50) return false;
-    if (element.querySelector('.code-copy-btn')) return false;
+    if (element.querySelector('.code-copy-button')) return false;
     
     // Check if parent already has a button to avoid duplicates
     let parent = element.parentElement;
     while (parent && parent !== document.body) {
-      if (parent.querySelector('.code-copy-btn')) return false;
+      if (parent.querySelector('.code-copy-button')) return false;
       parent = parent.parentElement;
     }
     
@@ -78,10 +137,27 @@ class CodeBlockCopier {
   }
 
   addCopyButton(codeBlock) {
+    if (this.isCurrentPageExcluded()) return;
+
+    // Find the best container
+    let container = codeBlock;
+    if (codeBlock.tagName === 'CODE' && codeBlock.parentElement?.tagName === 'PRE') {
+      container = codeBlock.parentElement;
+    }
+    
+    const wrapper = container.closest('.highlight, .codehilite');
+    if (wrapper && !wrapper.querySelector('.code-copy-button')) {
+      container = wrapper;
+    }
+
+    if (container.querySelector('.code-copy-button')) {
+      return;
+    }
+
     const button = document.createElement('button');
-    button.className = 'code-copy-btn';
-    button.textContent = 'Copy';
+    button.className = `code-copy-button theme-${this.settings.theme} pos-${this.settings.position}`;
     button.title = 'Copy code';
+    button.innerHTML = `${COPY_SVG}<span class="copy-text">Copy</span>`;
 
     button.addEventListener('click', (e) => {
       e.preventDefault();
@@ -89,31 +165,16 @@ class CodeBlockCopier {
       this.copyCode(codeBlock, button);
     });
 
-    // Find the best container - be more specific to avoid duplicates
-    let container = codeBlock;
-    
-    // If it's a code inside pre, use the pre
-    if (codeBlock.tagName === 'CODE' && codeBlock.parentElement?.tagName === 'PRE') {
-      container = codeBlock.parentElement;
-    }
-    
-    // If there's a highlight wrapper, use that instead
-    const wrapper = container.closest('.highlight, .codehilite');
-    if (wrapper && !wrapper.querySelector('.code-copy-btn')) {
-      container = wrapper;
-    }
-
-    // Double-check we're not adding duplicate
-    if (container.querySelector('.code-copy-btn')) {
-      return;
-    }
-
     if (getComputedStyle(container).position === 'static') {
       container.style.position = 'relative';
     }
 
+    if (this.settings.autoHide) {
+      container.classList.add('code-copy-btn-autohide');
+    }
+
     container.appendChild(button);
-    this.copyButtons.add(button);
+    this.copyButtons.set(codeBlock, button);
   }
 
   async copyCode(codeBlock, button) {
@@ -121,26 +182,54 @@ class CodeBlockCopier {
       const text = this.getCodeText(codeBlock);
       await navigator.clipboard.writeText(text);
       
-      button.textContent = 'Copied!';
-      button.classList.add('success');
+      button.innerHTML = `${SUCCESS_SVG}<span class="copy-text">Copied!</span>`;
+      button.classList.add('copy-success');
+      
       this.copiesMade++;
+      
+      // Increment lifetime copies in storage
+      chrome.storage.local.get(['lifetimeCopies'], (res) => {
+        const lifetime = (res.lifetimeCopies || 0) + 1;
+        chrome.storage.local.set({ lifetimeCopies: lifetime });
+      });
 
       setTimeout(() => {
-        button.textContent = 'Copy';
-        button.classList.remove('success');
+        button.innerHTML = `${COPY_SVG}<span class="copy-text">Copy</span>`;
+        button.classList.remove('copy-success');
       }, 1500);
 
     } catch (error) {
-      button.textContent = 'Failed';
+      button.innerHTML = `${COPY_SVG}<span class="copy-text">Failed</span>`;
+      button.classList.add('copy-error');
       setTimeout(() => {
-        button.textContent = 'Copy';
+        button.innerHTML = `${COPY_SVG}<span class="copy-text">Copy</span>`;
+        button.classList.remove('copy-error');
       }, 1500);
     }
   }
 
   getCodeText(element) {
     const clone = element.cloneNode(true);
-    clone.querySelectorAll('.code-copy-btn').forEach(btn => btn.remove());
+    clone.querySelectorAll('.code-copy-button').forEach(btn => btn.remove());
+    
+    if (this.settings.stripLines) {
+      // List of common selectors for line numbers and gutters
+      const lineSelectors = [
+        '.js-line-number',       // GitHub
+        '.gutter',               // StackOverflow, Prism, etc.
+        '.line-numbers-rows',    // Prism
+        '.hljs-ln-n',            // Highlight.js
+        '.lineno',               // Pygments/Sphinx
+        '.line-number',
+        'td.blob-num',           // GitHub line number column
+        '.code-line-number'
+      ];
+      
+      lineSelectors.forEach(selector => {
+        clone.querySelectorAll(selector).forEach(el => el.remove());
+      });
+    }
+
     return clone.textContent || clone.innerText || '';
   }
 
@@ -170,4 +259,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ status: 'active' });
   }
   return true;
-}); 
+});

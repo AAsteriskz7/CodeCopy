@@ -8,82 +8,163 @@
 </head>
 <body>
     <div class="popup-container">
-        <header class="popup-header">
-            <div class="header-content">
-                <div class="icon-container">
-                    <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor">
-                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-                    </svg>
-                </div>
-                <div class="title-section">
-                    <h1>Copy Code Block</h1>
-                    <p class="version">v1.0.0</p>
-                </div>
-            </div>
-        </header>
-
-        <main class="popup-main">
-            <div class="status-section">
-                <div class="status-indicator">
-                    <div class="status-dot active"></div>
-                    <span id="status-text">Extension Active</span>
-                </div>
-                <p class="status-description">
-                    Copy buttons are automatically added to code blocks on this page.
-                </p>
-            </div>
-
-            <div class="statistics-section">
-                <h3>Statistics</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-number" id="blocks-found">0</span>
-                        <span class="stat-label">Code Blocks Found</span>
+        <!-- Panel 1: Dashboard View -->
+        <div id="dashboard-view" class="view-panel">
+            <header class="popup-header">
+                <div class="header-content">
+                    <div class="icon-container">
+                        <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                        </svg>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="copies-made">0</span>
-                        <span class="stat-label">Copies Made</span>
+                    <div class="title-section">
+                        <h1>Copy Code Block</h1>
+                        <p class="version">v1.0.0</p>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            <div class="actions-section">
-                <h3>Actions</h3>
-                <div class="action-buttons">
-                    <button id="refresh-btn" class="action-btn primary">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-                        </svg>
-                        Refresh Page
-                    </button>
-                    <button id="toggle-btn" class="action-btn secondary">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
-                        </svg>
-                        Settings
-                    </button>
+            <main class="popup-main">
+                <div class="status-section">
+                    <div class="status-indicator">
+                        <div class="status-dot active"></div>
+                        <span id="status-text">Extension Active</span>
+                    </div>
+                    <p class="status-description">
+                        Copy buttons are automatically added to code blocks on this page.
+                    </p>
                 </div>
-            </div>
-        </main>
 
-        <footer class="popup-footer">
-            <div class="coffee-section">
-                <a href="#" id="coffee-link" class="coffee-btn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M18.5 3H6C4.9 3 4 3.9 4 5v5.5c0 3.58 2.92 6.5 6.5 6.5S17 14.08 17 10.5V5c0-.55-.45-1-1-1H6c-.55 0-1 .45-1 1v5.5C5 14.42 7.58 17 10.5 17S16 14.42 16 10.5V5H18.5c1.38 0 2.5 1.12 2.5 2.5S19.88 10 18.5 10H18v1c0 .55.45 1 1 1h.5c2.21 0 4-1.79 4-4s-1.79-4-4-4z"/>
-                    </svg>
-                    Buy me a coffee
-                </a>
-            </div>
-            <div class="footer-links">
-                <a href="#" id="feedback-link">Feedback</a>
-                <a href="#" id="github-link">GitHub</a>
-            </div>
-        </footer>
+                <div class="statistics-section">
+                    <h3>Current Page Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-number" id="blocks-found">0</span>
+                            <span class="stat-label">Code Blocks Found</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="copies-made">0</span>
+                            <span class="stat-label">Copies (This Page)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="statistics-section" style="margin-top: 10px;">
+                    <div class="stats-grid" style="grid-template-columns: 1fr;">
+                        <div class="stat-item" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; text-align: left;">
+                            <span class="stat-label" style="font-size: 12px; font-weight: 600; color: #374151;">Total Lifetime Copies</span>
+                            <span class="stat-number" id="lifetime-copies" style="font-size: 20px; margin-bottom: 0; color: #764ba2;">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-section" style="margin-top: 14px;">
+                    <div class="action-buttons">
+                        <button id="refresh-btn" class="action-btn primary">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                            </svg>
+                            Refresh Page
+                        </button>
+                        <button id="toggle-btn" class="action-btn secondary">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                            </svg>
+                            Settings
+                        </button>
+                    </div>
+                </div>
+            </main>
+
+            <footer class="popup-footer">
+                <div class="coffee-section">
+                    <a href="#" id="coffee-link" class="coffee-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.5 3H6C4.9 3 4 3.9 4 5v5.5c0 3.58 2.92 6.5 6.5 6.5S17 14.08 17 10.5V5c0-.55-.45-1-1-1H6c-.55 0-1 .45-1 1v5.5C5 14.42 7.58 17 10.5 17S16 14.42 16 10.5V5H18.5c1.38 0 2.5 1.12 2.5 2.5S19.88 10 18.5 10H18v1c0 .55.45 1 1 1h.5c2.21 0 4-1.79 4-4s-1.79-4-4-4z"/>
+                        </svg>
+                        Buy me a coffee
+                    </a>
+                </div>
+                <div class="footer-links">
+                    <a href="#" id="feedback-link">Feedback</a>
+                    <a href="#" id="github-link">GitHub</a>
+                </div>
+            </footer>
+        </div>
+
+        <!-- Panel 2: Settings Panel View -->
+        <div id="settings-view" class="view-panel">
+            <header class="popup-header">
+                <div class="header-content" style="gap: 8px;">
+                    <button id="back-btn" class="back-btn" title="Back to dashboard" aria-label="Go Back">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                        </svg>
+                    </button>
+                    <div class="title-section">
+                        <h1>Settings</h1>
+                    </div>
+                </div>
+            </header>
+
+            <main class="popup-main">
+                <div class="settings-group">
+                    <label class="setting-label" for="theme-select">Visual Theme</label>
+                    <select id="theme-select" class="setting-control">
+                        <option value="gradient">Vibrant Gradient</option>
+                        <option value="glass">Minimal Glass</option>
+                        <option value="dark">Sleek Dark</option>
+                        <option value="light">Modern Light</option>
+                    </select>
+                </div>
+
+                <div class="settings-group">
+                    <label class="setting-label" for="position-select">Button Position</label>
+                    <select id="position-select" class="setting-control">
+                        <option value="top-right">Top Right</option>
+                        <option value="top-left">Top Left</option>
+                        <option value="bottom-right">Bottom Right</option>
+                        <option value="bottom-left">Bottom Left</option>
+                    </select>
+                </div>
+
+                <div class="settings-group checkbox-group">
+                    <div class="checkbox-row">
+                        <div class="checkbox-text">
+                            <label class="setting-label-checkbox" for="autohide-toggle">Auto-hide Button</label>
+                            <p class="setting-help">Only show when hovering over code blocks</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="autohide-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-group checkbox-group">
+                    <div class="checkbox-row">
+                        <div class="checkbox-text">
+                            <label class="setting-label-checkbox" for="striplines-toggle">Strip Line Numbers</label>
+                            <p class="setting-help">Automatically remove gutters from copied text</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="striplines-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <label class="setting-label" for="blocklist-input">Excluded Domains</label>
+                    <p class="setting-help" style="margin-bottom: 6px;">Exclusions (one URL part per line):</p>
+                    <textarea id="blocklist-input" class="setting-control textarea" placeholder="e.g. github.com/gist&#10;codepen.io/pen"></textarea>
+                </div>
+            </main>
+        </div>
     </div>
 
     <script src="popup.js"></script>
 </body>
-</html> 
+</html>

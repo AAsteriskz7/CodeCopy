@@ -275,4 +275,95 @@ div[class*="highlight"]:has(.code-copy-button) {
 /* Ensure proper layering */
 .code-copy-button {
   isolation: isolate;
+}
+
+/* Positioning overrides */
+.code-copy-button.pos-top-right {
+  top: 8px;
+  right: 8px;
+  bottom: auto;
+  left: auto;
+}
+.code-copy-button.pos-top-left {
+  top: 8px;
+  left: 8px;
+  bottom: auto;
+  right: auto;
+}
+.code-copy-button.pos-bottom-right {
+  bottom: 8px;
+  right: 8px;
+  top: auto;
+  left: auto;
+}
+.code-copy-button.pos-bottom-left {
+  bottom: 8px;
+  left: 8px;
+  top: auto;
+  right: auto;
+}
+
+/* Theme variations */
+.code-copy-button.theme-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+}
+.code-copy-button.theme-gradient:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.code-copy-button.theme-glass {
+  background: rgba(255, 255, 255, 0.15);
+  color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.code-copy-button.theme-glass:hover {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.code-copy-button.theme-dark {
+  background: #1f2937;
+  color: #f3f4f6;
+  border: 1px solid #374151;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+.code-copy-button.theme-dark:hover {
+  background: #374151;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+}
+
+.code-copy-button.theme-light {
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+.code-copy-button.theme-light:hover {
+  background: #f9fafb;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* Auto-hide support */
+.code-copy-btn-autohide .code-copy-button {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-5px);
+  transition: opacity 0.25s ease, transform 0.25s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.code-copy-btn-autohide:hover .code-copy-button {
+  opacity: 0.9;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.code-copy-btn-autohide:hover .code-copy-button:hover {
+  opacity: 1;
 } 

@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "description": "Automatically adds a copy button to code blocks on web pages for easy copying of code snippets.",
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "storage"
   ],
   "content_scripts": [
     {
