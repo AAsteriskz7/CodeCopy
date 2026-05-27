@@ -83,7 +83,7 @@ class CodeBlockCopier {
       button.className = 'code-copy-button';
       button.classList.add(`theme-${this.settings.theme}`);
       button.classList.add(`pos-${this.settings.position}`);
-      
+
       const container = button.parentElement;
       if (container) {
         if (this.settings.autoHide) {
@@ -124,14 +124,25 @@ class CodeBlockCopier {
   isValidCodeBlock(element) {
     if (!element || element.offsetHeight < 20 || element.offsetWidth < 50) return false;
     if (element.querySelector('.code-copy-button')) return false;
-    
+
     // Check if parent already has a button to avoid duplicates
     let parent = element.parentElement;
     while (parent && parent !== document.body) {
       if (parent.querySelector('.code-copy-button')) return false;
       parent = parent.parentElement;
     }
-    
+
+    const style = window.getComputedStyle(element);
+    const isBlock = style.display === 'block' || style.display === 'grid' || style.display === 'flex';
+
+    if (element.tagName === 'CODE' && (!element.parentElement || element.parentElement.tagName !== 'PRE')) {
+      return false;
+    }
+
+    if (!isBlock && element.tagName !== 'PRE') {
+      return false;
+    }
+
     const text = element.textContent || '';
     return text.trim().length > 15;
   }
@@ -144,7 +155,7 @@ class CodeBlockCopier {
     if (codeBlock.tagName === 'CODE' && codeBlock.parentElement?.tagName === 'PRE') {
       container = codeBlock.parentElement;
     }
-    
+
     const wrapper = container.closest('.highlight, .codehilite');
     if (wrapper && !wrapper.querySelector('.code-copy-button')) {
       container = wrapper;
@@ -181,12 +192,12 @@ class CodeBlockCopier {
     try {
       const text = this.getCodeText(codeBlock);
       await navigator.clipboard.writeText(text);
-      
+
       button.innerHTML = `${SUCCESS_SVG}<span class="copy-text">Copied!</span>`;
       button.classList.add('copy-success');
-      
+
       this.copiesMade++;
-      
+
       // Increment lifetime copies in storage
       chrome.storage.local.get(['lifetimeCopies'], (res) => {
         const lifetime = (res.lifetimeCopies || 0) + 1;
@@ -211,7 +222,7 @@ class CodeBlockCopier {
   getCodeText(element) {
     const clone = element.cloneNode(true);
     clone.querySelectorAll('.code-copy-button').forEach(btn => btn.remove());
-    
+
     if (this.settings.stripLines) {
       // List of common selectors for line numbers and gutters
       const lineSelectors = [
@@ -224,7 +235,7 @@ class CodeBlockCopier {
         'td.blob-num',           // GitHub line number column
         '.code-line-number'
       ];
-      
+
       lineSelectors.forEach(selector => {
         clone.querySelectorAll(selector).forEach(el => el.remove());
       });
